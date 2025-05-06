@@ -33,7 +33,9 @@ def evolve_partition(partition, rule):
     for i in range(0, len(partition)):
         echo.append([])
     #1 automatically stays with 1
-    echo[0].append(1)
+    for i in range(0, len(echo)):
+        if 1 in partition[i]:
+            echo[i].append(1)
 
     #actual work
     for i, num in enumerate(rule):
