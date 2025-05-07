@@ -47,18 +47,12 @@ size = 3
 
 int_to_partition_dictionary = all_set_partitions_dict(size)
 dict_length = len(int_to_partition_dictionary)
-print(int_to_partition_dictionary)
 
 transition_matrix = np.empty((dict_length, dict_length), dtype=poly.Polynomial)
 for i in range(dict_length):
     for j in range(dict_length):
         transition_matrix[i, j] = np.zeros(1)
 
-print(transition_matrix)
-print(transition_matrix[1,0])
-print(poly.polyadd(transition_matrix[0,0], [0,0,0,1]))
-
-count = 0
 for i in range(dict_length):
     for j in range(2 ** size):
         rule = num_to_binary_list(j, size)
@@ -67,12 +61,20 @@ for i in range(dict_length):
         index = find_index(new_partition, int_to_partition_dictionary)
         transition_matrix[i, index] = poly.polyadd(transition_matrix[i, index], new_poly)
 
-        count += 1
         print(int_to_partition_dictionary[i])
         print(rule)
         print(new_partition)
         print(new_poly)
         print(index)
-#print(dict_length)
-#print(int_to_partition_dictionary)
+
+delete = []
+for i in range(dict_length):
+    if transition_matrix[0, i] == np.array([0.]):
+        delete.append(i)
+delete.sort(reverse=True)
+for j in delete:
+    transition_matrix = np.delete(transition_matrix, j, axis = 0)
+    transition_matrix = np.delete(transition_matrix, j, axis = 1)
+
 print(transition_matrix)
+print(int_to_partition_dictionary)
