@@ -61,11 +61,13 @@ for i in range(dict_length):
         index = find_index(new_partition, int_to_partition_dictionary)
         transition_matrix[i, index] = poly.polyadd(transition_matrix[i, index], new_poly)
 
+        '''
         print(int_to_partition_dictionary[i])
         print(rule)
         print(new_partition)
         print(new_poly)
         print(index)
+        '''
 
 delete = []
 for i in range(dict_length):
