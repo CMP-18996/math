@@ -67,9 +67,9 @@ def evolve_partition(partition, rule):
 
     return result
 
-def new_component(start_partition, rule):
+def new_component(partition, rule):
     count = 0
-    for s in start_partition:
+    for s in partition:
         if len(s) == 1 and s[0] != 1 and rule[s[0] - 1] == 1 and rule[s[0] - 2] == 0:
             count += 1
     return count

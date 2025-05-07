@@ -25,21 +25,54 @@ def all_set_partitions_dict(n):
     partition_dict = {i: partitions[i] for i in range(len(partitions))}
     return partition_dict
 
-def num_to_binary_list(num):
+def num_to_binary_list(num, length):
     l = []
     while num != 0:
         l.append(num % 2)
         num = num // 2
+    while len(l) < length:
+        l.append(0)
     return l
 
-int_to_partition_dictionary = all_set_partitions_dict(4)
+def find_index(partition, dictionary):
+    def normalize(arr):
+        return sorted([sorted(inner) for inner in arr])
+    partition = normalize(partition)
+    for i, p in dictionary.items():
+        if normalize(p) == partition:
+            return i
+    return None
+
+size = 3
+
+int_to_partition_dictionary = all_set_partitions_dict(size)
 dict_length = len(int_to_partition_dictionary)
-
-transition_matrix = np.zeros((dict_length, dict_length))
-
-print(dict_length)
 print(int_to_partition_dictionary)
 
-print(evolve_partition([[1,2],[3]],[1,0,0]))
-print(new_component([[1,2],[3]],[1,0,0]))
+transition_matrix = np.empty((dict_length, dict_length), dtype=poly.Polynomial)
+for i in range(dict_length):
+    for j in range(dict_length):
+        transition_matrix[i, j] = np.zeros(1)
+
+print(transition_matrix)
+print(transition_matrix[1,0])
+print(poly.polyadd(transition_matrix[0,0], [0,0,0,1]))
+
+count = 0
+for i in range(dict_length):
+    for j in range(2 ** size):
+        rule = num_to_binary_list(j, size)
+        new_partition = evolve_partition(int_to_partition_dictionary[i], rule)
+        new_poly = poly.polypow([0, 1], new_component(int_to_partition_dictionary[i], rule))
+        index = find_index(new_partition, int_to_partition_dictionary)
+        transition_matrix[i, index] = poly.polyadd(transition_matrix[i, index], new_poly)
+
+        count += 1
+        print(int_to_partition_dictionary[i])
+        print(rule)
+        print(new_partition)
+        print(new_poly)
+        print(index)
+#print(dict_length)
+#print(int_to_partition_dictionary)
 print(transition_matrix)
