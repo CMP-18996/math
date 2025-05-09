@@ -43,7 +43,7 @@ def find_index(partition, dictionary):
             return i
     return None
 
-size = 3
+size = 5
 
 int_to_partition_dictionary = all_set_partitions_dict(size)
 dict_length = len(int_to_partition_dictionary)
@@ -68,7 +68,7 @@ for i in range(dict_length):
         print(new_poly)
         print(index)
         '''
-
+'''
 delete = []
 for i in range(dict_length):
     if transition_matrix[0, i] == np.array([0.]):
@@ -77,6 +77,25 @@ delete.sort(reverse=True)
 for j in delete:
     transition_matrix = np.delete(transition_matrix, j, axis = 0)
     transition_matrix = np.delete(transition_matrix, j, axis = 1)
-
+'''
 print(transition_matrix)
 print(int_to_partition_dictionary)
+
+illegal = [dict_length - 1]
+def check_valid_partition(partition):
+    for s in partition:
+        if not 1 in s:
+            parity = s[0] % 2
+            for i in range(1, len(s)):
+                if s[i] % 2 != parity:
+                    illegal.append(key)
+                    return
+for key, partition in int_to_partition_dictionary.items():
+    check_valid_partition(partition)
+illegal.sort(reverse=True)
+for key in illegal:
+    transition_matrix = np.delete(transition_matrix, key, axis=0)
+    transition_matrix = np.delete(transition_matrix, key, axis=1)
+
+print(illegal)
+print(transition_matrix)
