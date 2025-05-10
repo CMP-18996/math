@@ -51,7 +51,7 @@ def evolve_partition(partition, rule):
         elif num == 0 and i == len(rule) - 1:
             index = find_set_index(partition, i + 1)
             echo[index].append(1)
-        print(echo)
+        #print(echo)
     #remove duplicates
     echo = merge_common(echo)
 
@@ -77,5 +77,5 @@ def new_component(partition, rule):
             count += 1
     return count
 
-print(evolve_partition([[1,3],[2],[4]],[1,1,0,0]))
-print(new_component([[1,3],[2],[4]],[1,1,0,0]))
+#print(evolve_partition([[1,3],[2],[4]],[1,1,0,0]))
+#print(new_component([[1,3],[2],[4]],[1,1,0,0]))

@@ -45,6 +45,26 @@ def find_index(partition, dictionary):
 
 def make_transition_matrix(size):
     int_to_partition_dictionary = all_set_partitions_dict(size)
+
+    def check_valid_partition(partition):
+        for s in partition:
+            if not 1 in s:
+                parity = s[0] % 2
+                for i in range(1, len(s)):
+                    if s[i] % 2 != parity:
+                        return False
+
+        return True
+
+    illegal = [len(int_to_partition_dictionary) - 1]
+    for key, partition in int_to_partition_dictionary.items():
+        if not check_valid_partition(partition):
+            illegal.append(key)
+    for key in illegal:
+        del int_to_partition_dictionary[key]
+
+    int_to_partition_dictionary = dict(enumerate(int_to_partition_dictionary.values()))
+    print(int_to_partition_dictionary)
     dict_length = len(int_to_partition_dictionary)
 
     transition_matrix = np.empty((dict_length, dict_length), dtype=poly.Polynomial)
@@ -67,22 +87,6 @@ def make_transition_matrix(size):
             print(new_poly)
             print(index)
             '''
-
-    illegal = [dict_length - 1]
-    def check_valid_partition(partition):
-        for s in partition:
-            if not 1 in s:
-                parity = s[0] % 2
-                for i in range(1, len(s)):
-                    if s[i] % 2 != parity:
-                        illegal.append(key)
-                        return
-    for key, partition in int_to_partition_dictionary.items():
-        check_valid_partition(partition)
-    illegal.sort(reverse=True)
-    for key in illegal:
-        transition_matrix = np.delete(transition_matrix, key, axis=0)
-        transition_matrix = np.delete(transition_matrix, key, axis=1)
     return transition_matrix
 
 def poly_dot(vector1, vector2):
