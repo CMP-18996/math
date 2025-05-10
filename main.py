@@ -43,7 +43,7 @@ def find_index(partition, dictionary):
             return i
     return None
 
-size = 5
+size = 4
 
 int_to_partition_dictionary = all_set_partitions_dict(size)
 dict_length = len(int_to_partition_dictionary)
@@ -99,3 +99,30 @@ for key in illegal:
 
 print(illegal)
 print(transition_matrix)
+
+
+def poly_dot(vector1, vector2):
+    sum = poly.polyzero
+    for i in range(len(vector1)):
+        sum = poly.polyadd(sum, poly.polymul(vector1[i], vector2[i]))
+    return sum
+
+def poly_matrix_power(matrix, pow):
+    M = matrix
+    dim = matrix.shape[0]
+
+    def sq_multiply(m1, m2):
+        M = np.zeros((dim, dim), dtype=poly.Polynomial)
+        for i in range(dim):
+            for j in range(dim):
+                M[i, j] = poly_dot(m1[i, :], m2[:, j])
+        return M
+
+    for i in range(pow - 1):
+        M = sq_multiply(M, matrix)
+
+    return M
+
+powered = poly_matrix_power(transition_matrix, 3)
+print(powered)
+print(poly_dot(powered[0, :], np.ones(len(powered[0, :]))))
