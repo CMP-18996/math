@@ -77,5 +77,5 @@ def new_component(partition, rule):
             count += 1
     return count
 
-print(evolve_partition([[1,2,3,4,5]],[1,0,1,1,0]))
+#print(evolve_partition([[1,2,3,4,5]],[1,1,1,1,1]))
 #print(new_component([[1,3],[2],[4]],[1,1,0,0]))

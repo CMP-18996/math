@@ -2,29 +2,6 @@ from evolve_partition import *
 import numpy as np
 import numpy.polynomial.polynomial as poly
 
-def all_set_partitions_dict(n):
-    def helper(seq):
-        if not seq:
-            return [[]]
-        first = seq[0]
-        rest_partitions = helper(seq[1:])
-        result = []
-        for partition in rest_partitions:
-            # Insert 'first' into each existing subset
-            for i in range(len(partition)):
-                new_partition = partition[:i] + [partition[i] + [first]] + partition[i+1:]
-                result.append(new_partition)
-            # Or put 'first' in a new subset
-            result.append([[first]] + partition)
-        return result
-
-    elements = list(range(1, n + 1))
-    partitions = helper(elements)
-
-    # Store in a dictionary with integer keys
-    partition_dict = {i: partitions[i] for i in range(len(partitions))}
-    return partition_dict
-
 def num_to_binary_list(num, length):
     l = []
     while num != 0:
@@ -33,6 +10,17 @@ def num_to_binary_list(num, length):
     while len(l) < length:
         l.append(0)
     return l
+
+def set_partition_generator(p, size, counter):
+    for i in range(counter, len(p)):
+        for num in range(2 ** size):
+            rule = num_to_binary_list(num, size)
+            new = sorted([sorted(p) for p in evolve_partition(p[i], rule)], key=lambda subset: subset[0])
+            if not new in p:
+                newp = p
+                newp.append(new)
+                set_partition_generator(newp, size, i)
+    return {j: p[j] for j in range(len(p))}
 
 def find_index(partition, dictionary):
     def normalize(arr):
@@ -43,70 +31,8 @@ def find_index(partition, dictionary):
             return i
     return None
 
-def has_interleaving_overlap(partition):
-    sorted_parts = [sorted(s) for s in partition]
-    n = len(sorted_parts)
-
-    for i in range(n):
-        A = sorted_parts[i]
-        for j in range(i + 1, n):
-            B = sorted_parts[j]
-
-            for a_idx in range(len(A)):
-                a = A[a_idx]
-                for b_idx in range(a_idx + 1, len(A)):
-                    b = A[b_idx]
-                    for x_idx in range(len(B)):
-                        x = B[x_idx]
-                        if not a < x < b:
-                            continue
-                        for y in B[x_idx + 1:]:
-                            if b < y:
-                                return True
-    return False
-
 def make_transition_matrix(size):
-    int_to_partition_dictionary = all_set_partitions_dict(size)
-
-    def check_valid_partition(partition):
-        for s in partition:
-            if not 1 in s:
-                parity = s[0] % 2
-                for i in range(1, len(s)):
-                    if s[i] % 2 != parity:
-                        return False
-        '''
-        storage = []
-        for s in partition:
-            if len(s) == 1:
-                storage.append(s[0])
-        while len(storage) > 1:
-            if storage[0] + 1 == storage[1]:
-                return False
-            else:
-                storage.pop(0)
-        if [size] in partition:
-            if find_set_index(partition, 1) != find_set_index(partition, size - 1):
-                return False
-        '''
-        for s in partition:
-            if len(s) == 1:
-                if s[0] == size:
-                    if find_set_index(partition, 1) != find_set_index(partition, size - 1):
-                        return False
-                elif s[0] != 1:
-                    if find_set_index(partition, s[0] - 1) != find_set_index(partition, s[0] + 1):
-                        return False
-        if has_interleaving_overlap(partition):
-            return False
-        return True
-
-    illegal = []
-    for key, partition in int_to_partition_dictionary.items():
-        if not check_valid_partition(partition):
-            illegal.append(key)
-    for key in illegal:
-        del int_to_partition_dictionary[key]
+    int_to_partition_dictionary = set_partition_generator([[list(range(1, size + 1))]], size, 0)
 
     int_to_partition_dictionary = dict(enumerate(int_to_partition_dictionary.values()))
     print(int_to_partition_dictionary)
@@ -123,13 +49,13 @@ def make_transition_matrix(size):
             new_partition = evolve_partition(int_to_partition_dictionary[i], rule)
             new_poly = poly.polypow([0, 1], new_component(int_to_partition_dictionary[i], rule))
             index = find_index(new_partition, int_to_partition_dictionary)
-
+            '''
             print(int_to_partition_dictionary[i])
             print(rule)
             print(new_partition)
             print(new_poly)
             print(index)
-
+            '''
             transition_matrix[i, index] = poly.polyadd(transition_matrix[i, index], new_poly)
     return transition_matrix
 
