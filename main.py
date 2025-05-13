@@ -1,9 +1,10 @@
 from transition_matrix import *
 
-size = 4
-power = 2
+size = 7
+power = 3
 transition_matrix = make_transition_matrix(size)
 
+print(transition_matrix)
 powered = poly_matrix_power(transition_matrix, power)
 print(powered)
 

@@ -43,6 +43,28 @@ def find_index(partition, dictionary):
             return i
     return None
 
+def has_interleaving_overlap(partition):
+    sorted_parts = [sorted(s) for s in partition]
+    n = len(sorted_parts)
+
+    for i in range(n):
+        A = sorted_parts[i]
+        for j in range(i + 1, n):
+            B = sorted_parts[j]
+
+            for a_idx in range(len(A)):
+                a = A[a_idx]
+                for b_idx in range(a_idx + 1, len(A)):
+                    b = A[b_idx]
+                    for x_idx in range(len(B)):
+                        x = B[x_idx]
+                        if not a < x < b:
+                            continue
+                        for y in B[x_idx + 1:]:
+                            if b < y:
+                                return True
+    return False
+
 def make_transition_matrix(size):
     int_to_partition_dictionary = all_set_partitions_dict(size)
 
@@ -53,10 +75,33 @@ def make_transition_matrix(size):
                 for i in range(1, len(s)):
                     if s[i] % 2 != parity:
                         return False
-
+        '''
+        storage = []
+        for s in partition:
+            if len(s) == 1:
+                storage.append(s[0])
+        while len(storage) > 1:
+            if storage[0] + 1 == storage[1]:
+                return False
+            else:
+                storage.pop(0)
+        if [size] in partition:
+            if find_set_index(partition, 1) != find_set_index(partition, size - 1):
+                return False
+        '''
+        for s in partition:
+            if len(s) == 1:
+                if s[0] == size:
+                    if find_set_index(partition, 1) != find_set_index(partition, size - 1):
+                        return False
+                elif s[0] != 1:
+                    if find_set_index(partition, s[0] - 1) != find_set_index(partition, s[0] + 1):
+                        return False
+        if has_interleaving_overlap(partition):
+            return False
         return True
 
-    illegal = [len(int_to_partition_dictionary) - 1]
+    illegal = []
     for key, partition in int_to_partition_dictionary.items():
         if not check_valid_partition(partition):
             illegal.append(key)
@@ -78,15 +123,14 @@ def make_transition_matrix(size):
             new_partition = evolve_partition(int_to_partition_dictionary[i], rule)
             new_poly = poly.polypow([0, 1], new_component(int_to_partition_dictionary[i], rule))
             index = find_index(new_partition, int_to_partition_dictionary)
-            transition_matrix[i, index] = poly.polyadd(transition_matrix[i, index], new_poly)
 
-            '''
             print(int_to_partition_dictionary[i])
             print(rule)
             print(new_partition)
             print(new_poly)
             print(index)
-            '''
+
+            transition_matrix[i, index] = poly.polyadd(transition_matrix[i, index], new_poly)
     return transition_matrix
 
 def poly_dot(vector1, vector2):
