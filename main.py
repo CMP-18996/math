@@ -2,8 +2,8 @@ from transition_matrix import *
 import time
 
 start = time.time()
-size = 9
-power = 1
+size = 4
+power = 3
 transition_matrix = make_transition_matrix(size)
 
 print(transition_matrix)

@@ -73,9 +73,13 @@ def evolve_partition(partition, rule):
 def new_component(partition, rule):
     count = 0
     for s in partition:
-        if len(s) == 1 and s[0] != 1 and rule[s[0] - 1] == 1 and rule[s[0] - 2] == 0:
+        check = True
+        for num in s:
+            if num == 1 or rule[num - 1] == 0 or rule[num - 2] == 1:
+                check = False
+        if check:
             count += 1
     return count
 
-#print(evolve_partition([[1,2,3,4,5]],[1,1,1,1,1]))
+#print(evolve_partition([[2,4],[1],[3]],[0,0,1,0]))
 #print(new_component([[1,3],[2],[4]],[1,1,0,0]))
